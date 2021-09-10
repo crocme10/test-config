@@ -1,0 +1,7 @@
+mode = "testing"
+
+[elasticsearch]
+url = "https://localhost:9201" # We use a different port for elasticsearch testing.
+
+[service]
+host = "localhost" # In testing, we only listen on localhost

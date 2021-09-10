@@ -1,0 +1,14 @@
+[logging]
+path = "logs" # Path to logs directory.
+
+[elasticsearch]
+url = "http://localhost:9200"
+  [elasticsearch.settings]
+  nb_replicas = 4
+  nb_shards = 2
+  [elasticsearch.mappings]
+  value = "json"
+
+[service]
+host = "0.0.0.0"
+port = 5000
