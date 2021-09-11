@@ -37,21 +37,10 @@ pub enum Error {
 }
 
 #[derive(Debug, Clone, Deserialize)]
-pub struct ElasticsearchSettings {
-    pub nb_replicas: u32,
-    pub nb_shards: u32,
-}
-
-#[derive(Debug, Clone, Deserialize)]
-pub struct ElasticsearchMappings {
-    pub value: serde_json::Value,
-}
-
-#[derive(Debug, Clone, Deserialize)]
 pub struct Elasticsearch {
     pub url: String,
-    pub settings: ElasticsearchSettings,
-    pub mappings: ElasticsearchMappings,
+    pub settings: serde_json::Value,
+    pub mappings: serde_json::Value,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -98,7 +87,7 @@ impl Settings {
         // argument. If neither is present, we return an error.
         let run_mode = env::var("RUN_MODE").or_else(|_| {
             matches
-                .value_of("run_mode")
+                .value_of("run mode")
                 .ok_or_else(|| Error::ArgMissing {
                     msg: String::from("Missing run mode. You should either set the env var RUN_MODE, or use -m to specify a run mode"),
                 })
@@ -108,6 +97,39 @@ impl Settings {
         let run_mode_path = config_dir.join(&run_mode).with_extension("toml");
 
         builder = builder.add_source(File::from(run_mode_path).required(true));
+
+        let mappings_path = config_dir
+            .join("elasticsearch")
+            .join("mappings")
+            .with_extension("json");
+
+        builder = builder.add_source(File::from(mappings_path).required(true));
+
+        let settings_path = config_dir
+            .join("elasticsearch")
+            .join("settings")
+            .with_extension("json");
+
+        builder = builder.add_source(File::from(settings_path).required(true));
+
+        // let mut mappings_builder = Config::builder();
+
+        // let mappings_path = config_dir
+        //     .join("elasticsearch")
+        //     .join("mappings")
+        //     .with_extension("json");
+
+        // mappings_builder = mappings_builder.add_source(File::from(mappings_path));
+
+        // let mappings_config = mappings_builder.build().context(ConfigMerge {
+        //     msg: String::from("Cannot build mappings configuration"),
+        // })?;
+
+        // let mappings: serde_json::Value = mappings_config.try_into().context(ConfigMerge {
+        //     msg: String::from("Cannot build ouoou"),
+        // })?;
+
+        // builder.set_default("elasticsearch.mappings", mappings);
 
         let config = builder.build().context(ConfigMerge {
             msg: String::from("Cannot build configuration"),
