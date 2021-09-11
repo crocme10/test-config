@@ -112,24 +112,22 @@ impl Settings {
 
         builder = builder.add_source(File::from(settings_path).required(true));
 
-        // let mut mappings_builder = Config::builder();
-
-        // let mappings_path = config_dir
-        //     .join("elasticsearch")
-        //     .join("mappings")
-        //     .with_extension("json");
-
-        // mappings_builder = mappings_builder.add_source(File::from(mappings_path));
-
-        // let mappings_config = mappings_builder.build().context(ConfigMerge {
-        //     msg: String::from("Cannot build mappings configuration"),
-        // })?;
-
-        // let mappings: serde_json::Value = mappings_config.try_into().context(ConfigMerge {
-        //     msg: String::from("Cannot build ouoou"),
-        // })?;
-
-        // builder.set_default("elasticsearch.mappings", mappings);
+        let values: Vec<_> = matches.values_of("value").unwrap().collect();
+        let builder = values.iter().fold(builder, |builder, value| {
+            let kv = value.split('=').collect::<Vec<_>>();
+            match kv[1].parse::<bool>() {
+                Ok(val) => builder.set_override(kv[0], val).expect("set bool value"),
+                Err(_) => match kv[1].parse::<i64>() {
+                    Ok(val) => builder.set_override(kv[0], val).expect("set int value"),
+                    Err(_) => match kv[1].parse::<f64>() {
+                        Ok(val) => builder.set_override(kv[0], val).expect("set float value"),
+                        Err(_) => builder
+                            .set_override(kv[0], kv[1])
+                            .expect("set string value"),
+                    },
+                },
+            }
+        });
 
         let config = builder.build().context(ConfigMerge {
             msg: String::from("Cannot build configuration"),

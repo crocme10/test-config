@@ -36,6 +36,13 @@ async fn main() -> Result<(), Error> {
                 .long("run_mode")
                 .help("Run Mode: dev, prod, test"),
         )
+        .arg(
+            Arg::with_name("value")
+                .value_name("KEY=VALUE")
+                .short("v")
+                .multiple(true)
+                .help("Set config values"),
+        )
         .get_matches();
 
     server::run(&matches).await.context(ServerError)

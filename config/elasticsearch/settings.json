@@ -1,7 +1,7 @@
 {
   "elasticsearch": {
     "settings": {
-  "refresh_interval": "60s",
+      "refresh_interval": "60s",
   "analysis": {
     "filter": {
       "prefix_filter": {
@@ -74,7 +74,11 @@
       }
     }
   },
-  "index.default_pipeline": "indexed_at"
+  "index": {
+    "default_pipeline": "indexed_at",
+    "number_of_replicas": 2,
+    "number_of_shards": 7
+  }
 }
   }
 }
