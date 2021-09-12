@@ -30,7 +30,8 @@ pub async fn run<'a>(matches: &ArgMatches<'a>) -> Result<(), Error> {
 
     let app_name = concat!(env!("CARGO_PKG_NAME"), "-", env!("CARGO_PKG_VERSION")).to_string();
 
-    let file_appender = tracing_appender::rolling::daily(&settings.logging.path, "mimir.log");
+    let file_appender =
+        tracing_appender::rolling::daily(&settings.logging.path, env!("CARGO_PKG_NAME"));
     let (non_blocking, _guard) = tracing_appender::non_blocking(file_appender);
 
     let bunyan_formatting_layer = BunyanFormattingLayer::new(app_name, non_blocking);

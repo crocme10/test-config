@@ -19,7 +19,7 @@ const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
-    let matches = App::new("Microservice for bragi")
+    let matches = App::new("Testing Configuration")
         .version(VERSION)
         .author(clap::crate_authors!("\n"))
         .arg(
